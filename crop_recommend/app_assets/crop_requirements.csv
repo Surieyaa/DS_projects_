@@ -1,0 +1,11 @@
+Crop_Planted (Action),Growth Duration (days),Water Requirement (mm),Phosphorus Requirement (kg/ha),Potassium Requirement (kg/ha),Nitrogen Requirement (kg/ha),Base Yield (kg/ha)
+Chickpea,90,350,20,25,50,1000
+Chili,70,300,15,20,60,1500
+Cucumber,70,250,10,20,40,3000
+Groundnut,90,400,20,30,50,1200
+Maize,110,600,35,50,80,6000
+Okra,60,250,15,20,50,2000
+Pigeon Pea,120,600,30,40,50,1800
+Rice,140,1500,40,60,100,4000
+Soybean,100,500,25,35,50,2000
+Tomato,80,350,20,30,70,10000
