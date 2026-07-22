@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+{% block title %}RecruitAI — AI Smart Recruitment System{% endblock %}
+{% block content %}
+
+<section class="hero container">
+  <div class="eyebrow reveal in-view"><span class="dot"></span> Sentence-BERT · Deep Learning · LLM-assisted</div>
+  <h1 class="reveal in-view">Hiring, scored by <span class="accent">neural attention</span>, not keyword luck.</h1>
+  <p class="hero-sub reveal in-view">Upload a job description, let Sentence-BERT semantically match every resume, auto-rank candidates by ATS score, generate tailored interview questions, and run a voice mock interview — end to end.</p>
+  <div class="hero-ctas reveal in-view">
+    <a href="{{ url_for('hr_signup') }}" class="btn btn-primary">Post a Job as HR</a>
+    <a href="{{ url_for('jobs_list') }}" class="btn btn-ghost">Browse Open Roles</a>
+  </div>
+</section>
+
+<section class="container">
+  <div class="workflow">
+    <div class="card step-card reveal">
+      <span class="step-num">01 / 09</span>
+      <h4>HR posts a role</h4>
+      <p>Job description is parsed and required skills are auto-detected.</p>
+    </div>
+    <div class="card step-card reveal">
+      <span class="step-num">02 / 09</span>
+      <h4>Candidate uploads resume</h4>
+      <p>PyMuPDF + NLP extraction pulls skills, education, and experience.</p>
+    </div>
+    <div class="card step-card reveal">
+      <span class="step-num">03 / 09</span>
+      <h4>Sentence-BERT matching</h4>
+      <p>Resume and JD are embedded and compared by semantic similarity.</p>
+    </div>
+    <div class="card step-card reveal">
+      <span class="step-num">04 / 09</span>
+      <h4>ATS score & skill gap</h4>
+      <p>Weighted score across semantic, keyword and experience match.</p>
+    </div>
+    <div class="card step-card reveal">
+      <span class="step-num">05 / 09</span>
+      <h4>Candidate ranking</h4>
+      <p>Every applicant is ranked live on the recruiter dashboard.</p>
+    </div>
+    <div class="card step-card reveal">
+      <span class="step-num">06 / 09</span>
+      <h4>AI interview questions</h4>
+      <p>HR & technical questions generated from the candidate's own skills.</p>
+    </div>
+    <div class="card step-card reveal">
+      <span class="step-num">07 / 09</span>
+      <h4>Voice mock interview</h4>
+      <p>In-browser speech recognition scores spoken answers for relevance.</p>
+    </div>
+    <div class="card step-card reveal">
+      <span class="step-num">08 / 09</span>
+      <h4>Scheduling</h4>
+      <p>Email + calendar invite (.ics) sent once a slot is confirmed.</p>
+    </div>
+    <div class="card step-card reveal">
+      <span class="step-num">09 / 09</span>
+      <h4>Final PDF report</h4>
+      <p>A polished performance report ties every stage together.</p>
+    </div>
+  </div>
+</section>
+
+<section class="section container">
+  <div class="section-head reveal">
+    <h2>Every module, one pipeline</h2>
+    <p>Built on a deep-learning core — Sentence-BERT embeddings for semantic understanding, layered with rule-grounded scoring so results stay explainable.</p>
+  </div>
+  <div class="module-grid">
+    {% set modules = [
+      ("Resume Parsing", "PyMuPDF + spaCy-style extraction pulls contact info, skills, education and experience straight from PDF/DOCX."),
+      ("Semantic Skill Matching", "Sentence-BERT (all-MiniLM-L6-v2) embeds resume and JD text to measure true contextual similarity, not just keywords."),
+      ("AI-Powered ATS Score", "A weighted blend of semantic similarity, keyword overlap and experience fit — fully transparent sub-scores."),
+      ("Skill Gap Analysis", "Missing skills are grouped by category so candidates know exactly what to upskill."),
+      ("Candidate Ranking", "Every applicant to a role is ranked live, recalculated as new resumes arrive."),
+      ("AI Resume Summary", "An embedding-centrality summarizer distills the resume into its most representative lines."),
+      ("Interview Question Generation", "HR and technical questions are tailored to the candidate's matched skills."),
+      ("Voice Mock Interview", "Browser speech recognition transcribes spoken answers, scored against the question by semantic similarity."),
+      ("Recruiter Dashboard", "Live charts of score distribution, top skills and pipeline status."),
+      ("Email + Calendar Scheduling", "One click sends an interview email and downloadable calendar invite."),
+      ("PDF Report Generation", "A complete, shareable performance report for every candidate."),
+    ] %}
+    {% for title, desc in modules %}
+    <div class="card module-card card-hover reveal">
+      <div class="module-icon">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7" stroke="currentColor" stroke-width="1.4"/><circle cx="10" cy="10" r="2" fill="currentColor"/></svg>
+      </div>
+      <h4>{{ title }}</h4>
+      <p>{{ desc }}</p>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="section container">
+  <div class="card glow-card reveal" style="text-align:center; padding:56px 30px;">
+    <h2 style="margin-bottom:14px;">Ready to see it in action?</h2>
+    <p style="color:var(--text-low); max-width:480px; margin:0 auto 26px;">Post a role in under a minute, or explore existing openings as a candidate.</p>
+    <div class="hero-ctas">
+      <a href="{{ url_for('hr_signup') }}" class="btn btn-gold">Get Started as HR</a>
+      <a href="{{ url_for('jobs_list') }}" class="btn btn-ghost">View Open Roles</a>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

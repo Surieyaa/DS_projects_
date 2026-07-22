@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+{% block title %}Mock Interview — {{ application.job.title }}{% endblock %}
+{% block content %}
+<section class="container" style="padding-top:36px; max-width:680px;">
+  <div class="reveal in-view" style="text-align:center; margin-bottom:20px;">
+    <p class="eyebrow"><span class="dot"></span> Voice mock interview</p>
+    <h2>Let's hear your answers</h2>
+    <p style="color:var(--text-low); margin-top:8px;">Question <span id="q-index">1</span> of {{ questions|length }} — click the mic, speak your answer, then click again to stop.</p>
+  </div>
+
+  <div class="card glow-card reveal in-view">
+    <h3 id="question-text" style="font-size:19px; line-height:1.5; text-align:center;">{{ questions[0] if questions else "No questions available." }}</h3>
+
+    <div class="mic-wrap">
+      <button type="button" id="mic-btn" class="mic-btn">
+        <svg width="30" height="30" viewBox="0 0 24 24" fill="none"><path d="M12 15a3 3 0 003-3V6a3 3 0 10-6 0v6a3 3 0 003 3z" stroke="currentColor" stroke-width="1.6"/><path d="M19 11a7 7 0 01-14 0M12 18v3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+      </button>
+      <div class="transcript-box" id="transcript-box">Your answer will appear here as you speak...</div>
+      <p id="mic-status" style="font-size:13px; color:var(--text-low); font-family:var(--font-mono);">Click the mic to start</p>
+    </div>
+
+    <div style="display:flex; justify-content:space-between; gap:12px; margin-top:10px;">
+      <button type="button" id="skip-btn" class="btn btn-ghost btn-sm">Skip question</button>
+      <button type="button" id="next-btn" class="btn btn-primary btn-sm" disabled>Next question →</button>
+    </div>
+  </div>
+
+  <div id="not-supported" class="card reveal" style="display:none; margin-top:18px; border-color:rgba(241,101,101,0.4);">
+    <p style="color:#ff9b9b; font-size:14px;">Your browser doesn't support the Web Speech API (try Chrome/Edge on desktop). You can type your answer instead:</p>
+    <textarea id="manual-answer" rows="3" placeholder="Type your answer..." style="margin-top:10px;"></textarea>
+  </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const questions = {{ questions|tojson }};
+const appId = {{ application.id }};
+let currentIndex = 0;
+const answers = [];
+
+const qText = document.getElementById("question-text");
+const qIndexEl = document.getElementById("q-index");
+const micBtn = document.getElementById("mic-btn");
+const transcriptBox = document.getElementById("transcript-box");
+const micStatus = document.getElementById("mic-status");
+const nextBtn = document.getElementById("next-btn");
+const skipBtn = document.getElementById("skip-btn");
+const notSupported = document.getElementById("not-supported");
+const manualAnswer = document.getElementById("manual-answer");
+
+let recognition = null;
+let listening = false;
+let currentTranscript = "";
+
+const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+if (!SpeechRecognition) {
+  notSupported.style.display = "block";
+  micBtn.disabled = true;
+} else {
+  recognition = new SpeechRecognition();
+  recognition.continuous = true;
+  recognition.interimResults = true;
+  recognition.lang = "en-US";
+
+  recognition.onresult = (event) => {
+    let text = "";
+    for (let i = 0; i < event.results.length; i++) {
+      text += event.results[i][0].transcript + " ";
+    }
+    currentTranscript = text.trim();
+    transcriptBox.textContent = currentTranscript;
+    nextBtn.disabled = currentTranscript.length === 0;
+  };
+
+  recognition.onerror = () => { micStatus.textContent = "Mic error — try again."; };
+  recognition.onend = () => {
+    listening = false;
+    micBtn.classList.remove("listening");
+    micStatus.textContent = currentTranscript ? "Answer captured. Click next when ready." : "Click the mic to start";
+  };
+}
+
+micBtn.addEventListener("click", () => {
+  if (!recognition) return;
+  if (!listening) {
+    currentTranscript = "";
+    transcriptBox.textContent = "Listening...";
+    recognition.start();
+    listening = true;
+    micBtn.classList.add("listening");
+    micStatus.textContent = "Listening — click again to stop";
+  } else {
+    recognition.stop();
+  }
+});
+
+function goNext(skip) {
+  const transcript = skip ? "" : (manualAnswer ? (currentTranscript || manualAnswer.value) : currentTranscript);
+  answers.push({ question: questions[currentIndex], transcript: transcript });
+  currentIndex++;
+  currentTranscript = "";
+  nextBtn.disabled = true;
+  if (manualAnswer) manualAnswer.value = "";
+
+  if (currentIndex >= questions.length) {
+    submitInterview();
+    return;
+  }
+  qIndexEl.textContent = currentIndex + 1;
+  qText.textContent = questions[currentIndex];
+  transcriptBox.textContent = "Your answer will appear here as you speak...";
+  micStatus.textContent = "Click the mic to start";
+}
+
+nextBtn.addEventListener("click", () => goNext(false));
+skipBtn.addEventListener("click", () => goNext(true));
+
+async function submitInterview() {
+  showLoadingOverlay("Scoring your responses...");
+  const resp = await fetch(`/interview/${appId}/submit`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ answers: answers }),
+  });
+  const data = await resp.json();
+  window.location.href = `/results/${appId}`;
+}
+</script>
+{% endblock %}

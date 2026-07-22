@@ -1,0 +1,22 @@
+# Render Blueprint — https://render.com/docs/blueprint-spec
+# Deploy: push this repo to GitHub, then in Render click
+# New -> Blueprint and point it at the repo. This file configures
+# everything automatically (env vars, persistent disk, build/start commands).
+services:
+  - type: web
+    name: ai-smart-recruitment
+    env: python
+    plan: starter          # free tier is usually too little RAM for torch + sentence-transformers
+    buildCommand: "pip install -r requirements.txt && python3 -c \"from sentence_transformers import SentenceTransformer; SentenceTransformer('all-MiniLM-L6-v2')\""
+    startCommand: "gunicorn app:app --bind 0.0.0.0:$PORT --workers 1 --threads 4 --timeout 300"
+    envVars:
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DATA_DIR
+        value: /var/data
+      - key: PYTHON_VERSION
+        value: 3.11.9
+    disk:
+      name: recruitment-data
+      mountPath: /var/data   # persists the SQLite DB, uploaded resumes, and generated PDFs across deploys
+      sizeGB: 1

@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}HR Login — RecruitAI{% endblock %}
+{% block content %}
+<div class="form-shell card glow-card reveal in-view">
+  <h2>Welcome back</h2>
+  <p style="color:var(--text-low); margin-top:6px; font-size:14px;">Log in to your recruiter dashboard.</p>
+  <form method="POST" data-loading-text="Logging in...">
+    <label>Username</label>
+    <input type="text" name="username" placeholder="hr_admin" required>
+    <label>Password</label>
+    <input type="password" name="password" placeholder="••••••••" required>
+    <button type="submit" class="btn btn-primary btn-block" style="margin-top:26px;">Log in</button>
+  </form>
+  <p style="margin-top:18px; font-size:13.5px; color:var(--text-low);">New here? <a href="{{ url_for('hr_signup') }}" style="color:var(--indigo-bright);">Create an account</a></p>
+</div>
+{% endblock %}

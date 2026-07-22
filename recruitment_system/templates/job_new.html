@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Post a Job — RecruitAI{% endblock %}
+{% block content %}
+<div class="form-shell card glow-card reveal in-view" style="max-width:640px;">
+  <h2>Post a new role</h2>
+  <p style="color:var(--text-low); margin-top:6px; font-size:14px;">Required skills are auto-detected from your description using the same NLP pipeline as resume parsing.</p>
+  <form method="POST" data-loading-text="Analyzing job description...">
+    <label>Job title</label>
+    <input type="text" name="title" placeholder="Machine Learning Engineer" required>
+    <label>Job description</label>
+    <textarea name="description" rows="8" placeholder="Describe responsibilities, required skills (e.g. Python, PyTorch, NLP), and qualifications..." required></textarea>
+    <label>Minimum experience required (years)</label>
+    <input type="number" step="0.5" min="0" name="required_experience" placeholder="2" value="0">
+    <button type="submit" class="btn btn-primary btn-block" style="margin-top:26px;">Post Job & Detect Skills</button>
+  </form>
+</div>
+{% endblock %}

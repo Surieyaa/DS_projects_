@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}HR Sign Up — RecruitAI{% endblock %}
+{% block content %}
+<div class="form-shell card glow-card reveal in-view">
+  <h2>Create your HR account</h2>
+  <p style="color:var(--text-low); margin-top:6px; font-size:14px;">Post roles and screen candidates with AI.</p>
+  <form method="POST" data-loading-text="Setting up your workspace...">
+    <label>Company name</label>
+    <input type="text" name="company" placeholder="Acme Corp" required>
+    <label>Username</label>
+    <input type="text" name="username" placeholder="hr_admin" required>
+    <label>Password</label>
+    <input type="password" name="password" placeholder="••••••••" required>
+    <button type="submit" class="btn btn-primary btn-block" style="margin-top:26px;">Create account</button>
+  </form>
+  <p style="margin-top:18px; font-size:13.5px; color:var(--text-low);">Already have an account? <a href="{{ url_for('hr_login') }}" style="color:var(--indigo-bright);">Log in</a></p>
+</div>
+{% endblock %}

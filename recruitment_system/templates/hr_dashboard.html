@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Dashboard — RecruitAI{% endblock %}
+{% block content %}
+<section class="container" style="padding-top:30px;">
+  <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px; margin-bottom:36px;">
+    <div>
+      <h2>{{ hr.company }}'s Dashboard</h2>
+      <p style="color:var(--text-low); margin-top:6px;">Signed in as {{ hr.username }}</p>
+    </div>
+    <a href="{{ url_for('job_new') }}" class="btn btn-primary">+ Post New Job</a>
+  </div>
+
+  {% if not job_stats %}
+    <div class="card reveal in-view" style="text-align:center; padding:60px 20px;">
+      <h3>No roles posted yet</h3>
+      <p style="color:var(--text-low); margin-top:10px;">Post your first job description to start receiving AI-screened applications.</p>
+      <a href="{{ url_for('job_new') }}" class="btn btn-primary" style="margin-top:22px;">Post a Job</a>
+    </div>
+  {% else %}
+    <div class="module-grid">
+      {% for s in job_stats %}
+      <a href="{{ url_for('job_detail', job_id=s.job.id) }}" class="card module-card card-hover reveal" style="display:block;">
+        <h4 style="font-size:17px; margin-bottom:10px;">{{ s.job.title }}</h4>
+        <p style="margin-bottom:18px;">{{ s.job.description[:110] }}{% if s.job.description|length > 110 %}…{% endif %}</p>
+        <div style="display:flex; gap:22px;">
+          <div class="kpi"><div class="num">{{ s.count }}</div><div class="cap">Applicants</div></div>
+          <div class="kpi"><div class="num">{{ s.avg_score }}</div><div class="cap">Avg. ATS</div></div>
+          <div class="kpi"><div class="num">{{ s.top_score }}</div><div class="cap">Top Score</div></div>
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+  {% endif %}
+</section>
+{% endblock %}

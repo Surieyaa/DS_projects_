@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Apply — {{ job.title }}{% endblock %}
+{% block content %}
+<section class="container" style="padding-top:36px; max-width:640px;">
+  <div class="reveal in-view" style="margin-bottom:26px;">
+    <p class="eyebrow"><span class="dot"></span> Now hiring</p>
+    <h2>{{ job.title }}</h2>
+    <p style="color:var(--text-low); margin-top:10px; line-height:1.6;">{{ job.description }}</p>
+    <div style="margin-top:14px;">
+      {% for s in job.required_skills %}<span class="pill pill-neutral">{{ s }}</span>{% endfor %}
+    </div>
+  </div>
+
+  <div class="card glow-card reveal in-view">
+    <h3 style="margin-bottom:6px;">Apply now</h3>
+    <p style="color:var(--text-low); font-size:14px; margin-bottom:10px;">Your resume will be parsed and semantically matched instantly.</p>
+    <form method="POST" enctype="multipart/form-data" data-loading-text="Parsing resume & computing ATS score...">
+      <label>Full name</label>
+      <input type="text" name="name" placeholder="Jane Doe">
+      <label>Email</label>
+      <input type="email" name="email" placeholder="jane@example.com">
+      <label>Phone</label>
+      <input type="text" name="phone" placeholder="+91 98765 43210">
+
+      <label>Resume (PDF, DOCX, or TXT)</label>
+      <div class="dropzone">
+        <div class="dz-scan"></div>
+        <div class="dz-icon">
+          <svg width="30" height="30" viewBox="0 0 24 24" fill="none" style="margin:0 auto;"><path d="M12 3v12M12 3l-4 4M12 3l4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 15v3a2 2 0 002 2h12a2 2 0 002-2v-3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        </div>
+        <p style="color:var(--text-mid); font-size:14px;">Drag & drop your resume, or click to browse</p>
+        <p class="dz-filename" style="color:var(--indigo-bright); font-size:13px; margin-top:6px; font-family:var(--font-mono);"></p>
+        <input type="file" name="resume" accept=".pdf,.docx,.doc,.txt" required style="display:none;">
+      </div>
+
+      <button type="submit" class="btn btn-primary btn-block" style="margin-top:26px;">Submit Application</button>
+    </form>
+  </div>
+</section>
+{% endblock %}

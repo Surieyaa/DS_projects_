@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% block title %}Your Results — {{ job.title }}{% endblock %}
+{% block content %}
+<section class="container" style="padding-top:36px; max-width:760px;">
+  <div class="reveal in-view" style="text-align:center; margin-bottom:8px;">
+    <p class="eyebrow"><span class="dot"></span> Screening complete</p>
+    <h2>Hi {{ candidate.name }}, here's how you matched</h2>
+    <p style="color:var(--text-low); margin-top:8px;">Applied for <b style="color:var(--text-hi);">{{ job.title }}</b></p>
+  </div>
+
+  <div class="card glow-card reveal in-view" style="margin-top:28px; text-align:center;">
+    <div class="score-ring-wrap" data-score-ring data-score="{{ application.ats_score }}">
+      <svg viewBox="0 0 168 168">
+        <defs>
+          <linearGradient id="ringGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#7c8cff"/>
+            <stop offset="100%" stop-color="#e4a93b"/>
+          </linearGradient>
+        </defs>
+        <circle class="score-ring-bg" cx="84" cy="84" r="74"></circle>
+        <circle class="score-ring-fg" cx="84" cy="84" r="74"></circle>
+      </svg>
+      <div class="score-ring-label"><span class="num">0</span><span class="cap">ATS Score</span></div>
+    </div>
+    <h3 style="margin-top:18px;">{{ application.verdict }}</h3>
+  </div>
+
+  <div class="card reveal" style="margin-top:20px;">
+    <h4 style="margin-bottom:20px;">Score breakdown</h4>
+    <div class="bar-row">
+      <div class="bar-label">Semantic Match (BERT)</div>
+      <div class="bar-track"><div class="bar-fill" data-bar-fill="{{ application.semantic_score }}"></div></div>
+      <div class="bar-val">{{ application.semantic_score }}%</div>
+    </div>
+    <div class="bar-row">
+      <div class="bar-label">Skill Keyword Match</div>
+      <div class="bar-track"><div class="bar-fill" data-bar-fill="{{ application.keyword_score }}"></div></div>
+      <div class="bar-val">{{ application.keyword_score }}%</div>
+    </div>
+    <div class="bar-row">
+      <div class="bar-label">Experience Match</div>
+      <div class="bar-track"><div class="bar-fill" data-bar-fill="{{ application.experience_score }}"></div></div>
+      <div class="bar-val">{{ application.experience_score }}%</div>
+    </div>
+  </div>
+
+  <div class="grid-2" style="margin-top:20px;">
+    <div class="card reveal">
+      <h4 style="margin-bottom:14px;">Matched skills</h4>
+      {% for s in application.matched_skills %}<span class="pill pill-matched">{{ s }}</span>{% else %}<p style="color:var(--text-low); font-size:13.5px;">No direct skill matches found.</p>{% endfor %}
+    </div>
+    <div class="card reveal">
+      <h4 style="margin-bottom:14px;">Skill gaps</h4>
+      {% for s in application.missing_skills %}<span class="pill pill-missing">{{ s }}</span>{% else %}<p style="color:var(--text-low); font-size:13.5px;">Full skill match — no gaps!</p>{% endfor %}
+    </div>
+  </div>
+
+  <div class="card reveal" style="margin-top:20px;">
+    <h4 style="margin-bottom:12px;">AI resume summary</h4>
+    <p style="line-height:1.65; font-size:14.5px;">{{ application.summary }}</p>
+  </div>
+
+  {% if application.voice_eval and application.voice_eval.get('answered') %}
+  <div class="card reveal" style="margin-top:20px;">
+    <h4 style="margin-bottom:14px;">Voice mock interview evaluation</h4>
+    <div style="display:flex; gap:30px; flex-wrap:wrap; margin-bottom:10px;">
+      <div class="kpi"><div class="num">{{ application.voice_eval.answered }}/{{ application.voice_eval.total }}</div><div class="cap">Answered</div></div>
+      <div class="kpi"><div class="num">{{ application.voice_eval.avg_score }}%</div><div class="cap">Avg. relevance</div></div>
+    </div>
+    {% if application.recommendation %}<p style="margin-top:10px; font-size:14px;">Recommendation: <b style="color:var(--gold-bright);">{{ application.recommendation }}</b></p>{% endif %}
+  </div>
+  {% endif %}
+
+  <div class="card glow-card reveal" style="margin-top:20px; text-align:center; padding:40px 24px;">
+    {% if not application.voice_eval or not application.voice_eval.get('answered') %}
+      <h3 style="margin-bottom:10px;">Ready for the next step?</h3>
+      <p style="color:var(--text-low); margin-bottom:22px;">Take a short AI-generated mock interview — HR & technical questions tailored to your skills.</p>
+      <a href="{{ url_for('interview', app_id=application.id) }}" class="btn btn-gold">Start Mock Interview</a>
+    {% else %}
+      <h3 style="margin-bottom:10px;">You're all set</h3>
+      <p style="color:var(--text-low); margin-bottom:22px;">Download your full performance report, or wait for HR to reach out.</p>
+      <a href="{{ url_for('download_report', app_id=application.id) }}" class="btn btn-gold">Download PDF Report</a>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

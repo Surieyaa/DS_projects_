@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}Open Roles — RecruitAI{% endblock %}
+{% block content %}
+<section class="section container" style="padding-top:40px;">
+  <div class="section-head reveal in-view" style="margin-bottom:36px;">
+    <h2>Open Roles</h2>
+    <p>Apply in seconds — your resume is instantly parsed, semantically matched, and scored.</p>
+  </div>
+
+  {% if not jobs %}
+    <div class="card reveal in-view" style="text-align:center; padding:60px 20px;">
+      <h3>No open roles right now</h3>
+      <p style="color:var(--text-low); margin-top:10px;">Check back soon, or ask HR to post a role.</p>
+    </div>
+  {% else %}
+    <div class="module-grid">
+      {% for job in jobs %}
+      <div class="card module-card card-hover reveal">
+        <h4 style="font-size:17px; margin-bottom:10px;">{{ job.title }}</h4>
+        <p style="margin-bottom:16px;">{{ job.description[:130] }}{% if job.description|length > 130 %}…{% endif %}</p>
+        <div style="margin-bottom:18px;">
+          {% for s in job.required_skills[:6] %}<span class="pill pill-neutral">{{ s }}</span>{% endfor %}
+        </div>
+        <a href="{{ url_for('apply', job_id=job.id) }}" class="btn btn-primary btn-sm">Apply Now</a>
+      </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+</section>
+{% endblock %}

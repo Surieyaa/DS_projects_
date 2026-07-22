@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+{% block title %}{{ job.title }} — Candidates{% endblock %}
+{% block head %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+{% endblock %}
+{% block content %}
+<section class="container" style="padding-top:30px;">
+  <div style="margin-bottom:26px;">
+    <a href="{{ url_for('hr_dashboard') }}" style="font-size:13px; color:var(--text-low);">← Back to dashboard</a>
+    <h2 style="margin-top:10px;">{{ job.title }}</h2>
+    <p style="color:var(--text-low); margin-top:6px; max-width:700px;">{{ job.description[:200] }}{% if job.description|length > 200 %}…{% endif %}</p>
+    <div style="margin-top:12px;">{% for s in job.required_skills %}<span class="pill pill-neutral">{{ s }}</span>{% endfor %}</div>
+    <p style="margin-top:10px; font-size:13px; color:var(--text-low);">Apply link: <a href="{{ url_for('apply', job_id=job.id) }}" style="color:var(--indigo-bright);">{{ request.host_url }}apply/{{ job.id }}</a></p>
+  </div>
+
+  {% if applications %}
+  <div class="grid-2" style="margin-bottom:24px;">
+    <div class="card reveal in-view">
+      <h4 style="margin-bottom:16px;">Score distribution</h4>
+      <canvas id="scoreChart" height="180"></canvas>
+    </div>
+    <div class="card reveal in-view">
+      <h4 style="margin-bottom:16px;">Top matched skills</h4>
+      <canvas id="skillChart" height="180"></canvas>
+    </div>
+  </div>
+  {% endif %}
+
+  <div class="card reveal in-view" style="padding:0; overflow:hidden;">
+    <div style="padding:22px 24px 6px;"><h4>Ranked candidates ({{ applications|length }})</h4></div>
+    {% if not applications %}
+      <p style="padding:30px 24px; color:var(--text-low);">No applications yet. Share the apply link above.</p>
+    {% else %}
+    <table class="data-table">
+      <thead><tr><th>Rank</th><th>Candidate</th><th>ATS Score</th><th>Verdict</th><th>Status</th><th>Actions</th></tr></thead>
+      <tbody>
+        {% for a in applications %}
+        <tr>
+          <td><span class="rank-badge {% if a.rank == 1 %}gold{% endif %}">{{ a.rank }}</span></td>
+          <td>
+            <b style="color:var(--text-hi);">{{ a.candidate.name }}</b><br>
+            <span style="font-size:12.5px; color:var(--text-low);">{{ a.candidate.email or "—" }}</span>
+          </td>
+          <td style="font-family:var(--font-mono); color:var(--text-hi);">{{ a.ats_score }}</td>
+          <td>{{ a.verdict }}</td>
+          <td><span class="status-badge status-{{ a.status.replace(' ', '-') }}">{{ a.status }}</span></td>
+          <td>
+            <div style="display:flex; gap:6px; flex-wrap:wrap;">
+              <a href="{{ url_for('download_report', app_id=a.application.id) }}" class="btn btn-ghost btn-sm">PDF</a>
+              <button class="btn btn-primary btn-sm" onclick="document.getElementById('sched-{{ a.application.id }}').classList.toggle('open-modal')">Schedule</button>
+            </div>
+          </td>
+        </tr>
+        <tr id="sched-{{ a.application.id }}" class="schedule-row" style="display:none;">
+          <td colspan="6" style="background:rgba(255,255,255,0.02);">
+            <form method="POST" action="{{ url_for('schedule_interview', app_id=a.application.id) }}" style="display:flex; gap:12px; align-items:center; flex-wrap:wrap; padding:10px 0;">
+              <input type="datetime-local" name="datetime" required style="max-width:230px;">
+              <button type="submit" class="btn btn-gold btn-sm">Confirm & Notify</button>
+            </form>
+            <form method="POST" action="{{ url_for('update_status', app_id=a.application.id) }}" style="display:flex; gap:8px; align-items:center; margin-top:8px;">
+              <select name="status" style="max-width:220px;">
+                <option {% if a.status=='Screened' %}selected{% endif %}>Screened</option>
+                <option {% if a.status=='Interview Scheduled' %}selected{% endif %}>Interview Scheduled</option>
+                <option {% if a.status=='Selected' %}selected{% endif %}>Selected</option>
+                <option {% if a.status=='Rejected' %}selected{% endif %}>Rejected</option>
+              </select>
+              <button type="submit" class="btn btn-ghost btn-sm">Update status</button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% endif %}
+  </div>
+</section>
+
+<style>
+.schedule-row.open-modal, tr.schedule-row.open-modal { display: table-row !important; }
+</style>
+
+<script>
+{% if applications %}
+const scoreCtx = document.getElementById('scoreChart');
+new Chart(scoreCtx, {
+  type: 'bar',
+  data: {
+    labels: {{ applications|map(attribute='candidate.name')|list|tojson }},
+    datasets: [{ data: {{ applications|map(attribute='ats_score')|list|tojson }}, backgroundColor: '#7c8cff', borderRadius: 6 }]
+  },
+  options: { plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, max: 100, grid: { color: 'rgba(255,255,255,0.06)' }, ticks: { color: '#9AA0C3' } }, x: { grid: { display: false }, ticks: { color: '#9AA0C3' } } } }
+});
+
+fetch("{{ url_for('job_analytics', job_id=job.id) }}").then(r => r.json()).then(data => {
+  const entries = Object.entries(data.skill_counts).sort((a,b) => b[1]-a[1]).slice(0, 8);
+  new Chart(document.getElementById('skillChart'), {
+    type: 'doughnut',
+    data: {
+      labels: entries.map(e => e[0]),
+      datasets: [{ data: entries.map(e => e[1]), backgroundColor: ['#7c8cff','#e4a93b','#3ecf8e','#f16565','#5468f5','#f6c35e','#9aa0c3','#2c3488'] }]
+    },
+    options: { plugins: { legend: { position: 'bottom', labels: { color: '#9AA0C3', boxWidth: 10, font: { size: 11 } } } } }
+  });
+});
+{% endif %}
+</script>
+{% endblock %}
