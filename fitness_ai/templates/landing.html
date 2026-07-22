@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block title %}PulseFit AI — Your Intelligent Gym Assistant{% endblock %}
+{% block content %}
+<section class="landing-hero">
+  <div class="landing-copy">
+    <span class="eyebrow">AI-POWERED · PERSONAL TRAINING</span>
+    <h1>Train smarter.<br>Talk to your <span class="grad-text">AI trainer</span>.</h1>
+    <p class="lede">
+      Tell PulseFit what you want — a bigger chest, six-pack abs, fat loss, or full-on bodybuilding —
+      and get exercises with GIF demos, regional Tamil Nadu meal plans, and a daily plan built around
+      your goals. No scrolling through generic workout PDFs.
+    </p>
+    <div class="cta-row">
+      <a href="{{ url_for('auth.register') }}" class="btn btn-primary">Start free →</a>
+      <a href="{{ url_for('auth.login') }}" class="btn btn-ghost">I have an account</a>
+    </div>
+    <div class="stat-row">
+      <div><strong>1,324+</strong><span>exercises with GIFs</span></div>
+      <div><strong>190+</strong><span>regional meals</span></div>
+      <div><strong>24/7</strong><span>AI chat coach</span></div>
+    </div>
+  </div>
+
+  <div class="landing-visual">
+    <div class="chat-preview glass">
+      <div class="chat-preview-row bot">
+        <div class="avatar">⚡</div>
+        <div class="bubble">Tell me your goal — "I want a bigger chest" or "give me a leg day".</div>
+      </div>
+      <div class="chat-preview-row user">
+        <div class="bubble">I want six pack abs 🔥</div>
+      </div>
+      <div class="chat-preview-row bot">
+        <div class="avatar">⚡</div>
+        <div class="bubble">
+          Here are core exercises for you 💪
+          <div class="mini-cards">
+            <div class="mini-card"><div class="mini-thumb"></div><span>Cable Crunch</span></div>
+            <div class="mini-card"><div class="mini-thumb"></div><span>Leg Raise</span></div>
+            <div class="mini-card"><div class="mini-thumb"></div><span>Plank</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="pulse-ring"></div>
+  </div>
+</section>
+
+<section class="feature-grid">
+  <div class="feature-card glass">
+    <div class="feature-icon">🧠</div>
+    <h3>Natural-language coach</h3>
+    <p>Chat like you would with a real trainer — PulseFit detects your goal, target muscle, and available equipment automatically.</p>
+  </div>
+  <div class="feature-card glass">
+    <div class="feature-icon">🎞️</div>
+    <h3>Real exercise GIFs</h3>
+    <p>Every recommendation includes an animated form demo, target muscles, equipment, and step-by-step instructions.</p>
+  </div>
+  <div class="feature-card glass">
+    <div class="feature-icon">🍛</div>
+    <h3>Tamil Nadu meal plans</h3>
+    <p>Regional, protein-aware breakfast, lunch, snack and dinner suggestions tuned to your goal and diet preference.</p>
+  </div>
+  <div class="feature-card glass">
+    <div class="feature-icon">📊</div>
+    <h3>Progress you can see</h3>
+    <p>Log workouts and weight, track streaks, and export a polished PDF report whenever you need one.</p>
+  </div>
+</section>
+{% endblock %}

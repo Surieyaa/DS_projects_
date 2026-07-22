@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% block title %}Progress — PulseFit AI{% endblock %}
+{% block content %}
+<section class="dash-head">
+  <div>
+    <span class="eyebrow">PROGRESS</span>
+    <h2>Track your journey 📈</h2>
+  </div>
+  <a href="{{ url_for('main.download_report') }}" class="btn btn-primary">Download PDF report →</a>
+</section>
+
+<div class="two-col">
+  <div class="glass panel">
+    <h3>Log today</h3>
+    <form method="POST" class="form-stack">
+      <label>Workouts completed today
+        <input type="number" name="workouts_completed" min="0" max="10" value="1" required>
+      </label>
+      <label>Current weight (kg) <span class="optional">optional</span>
+        <input type="number" step="0.1" name="weight_kg">
+      </label>
+      <label>Notes <span class="optional">optional</span>
+        <input type="text" name="notes" placeholder="e.g. Push day, felt strong">
+      </label>
+      <button type="submit" class="btn btn-primary btn-block">Log progress →</button>
+    </form>
+  </div>
+
+  <div class="glass panel">
+    <h3>Weight trend</h3>
+    <canvas id="weightChart" height="220"></canvas>
+  </div>
+</div>
+
+<div class="glass panel">
+  <h3>History</h3>
+  {% if logs %}
+  <table class="history-table">
+    <thead><tr><th>Date</th><th>Workouts</th><th>Weight (kg)</th><th>Notes</th></tr></thead>
+    <tbody>
+      {% for l in logs|reverse %}
+      <tr>
+        <td>{{ l.log_date.strftime('%d %b %Y') }}</td>
+        <td>{{ l.workouts_completed }}</td>
+        <td>{{ l.weight_kg or '-' }}</td>
+        <td>{{ l.notes or '-' }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p class="subtext">No progress logged yet. Add your first entry above!</p>
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js"></script>
+<script>
+const labels = {{ logs|map(attribute='log_date')|map('string')|list|tojson }};
+const weights = {{ logs|map(attribute='weight_kg')|list|tojson }};
+new Chart(document.getElementById('weightChart'), {
+  type: 'line',
+  data: {
+    labels: labels,
+    datasets: [{
+      label: 'Weight (kg)',
+      data: weights,
+      borderColor: '#0EA5A0',
+      backgroundColor: 'rgba(14,165,160,0.15)',
+      tension: 0.35,
+      fill: true,
+      pointBackgroundColor: '#7C5CFC',
+    }]
+  },
+  options: {
+    plugins: { legend: { labels: { color: '#C9D3E0' } } },
+    scales: {
+      x: { ticks: { color: '#8792A3' }, grid: { color: 'rgba(255,255,255,0.05)' } },
+      y: { ticks: { color: '#8792A3' }, grid: { color: 'rgba(255,255,255,0.05)' } }
+    }
+  }
+});
+</script>
+{% endblock %}

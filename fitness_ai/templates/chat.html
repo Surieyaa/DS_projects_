@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block title %}AI Coach — PulseFit AI{% endblock %}
+{% block content %}
+<section class="chat-shell glass">
+  <div class="chat-header">
+    <div class="avatar avatar-lg">⚡</div>
+    <div>
+      <h3>PulseFit Coach</h3>
+      <span class="online-dot">● online — ask me anything about workouts &amp; diet</span>
+    </div>
+  </div>
+
+  <div id="chat-window" class="chat-window">
+    <div class="chat-row bot">
+      <div class="avatar">⚡</div>
+      <div class="bubble">
+        Hey {{ user.name.split(' ')[0] }}! I'm your AI trainer. Try:
+        <br>&bull; "I want a bigger chest"
+        <br>&bull; "I want six pack abs"
+        <br>&bull; "give me a weekly workout plan"
+        <br>&bull; "suggest a high protein diet"
+        <br>&bull; "I only have dumbbells"
+      </div>
+    </div>
+  </div>
+
+  <form id="chat-form" class="chat-input-row">
+    <input id="chat-input" type="text" placeholder="Type your fitness goal..." autocomplete="off" autofocus>
+    <button type="submit" class="btn btn-primary">Send</button>
+  </form>
+</section>
+
+<template id="exercise-card-template">
+  <div class="exercise-card glass">
+    <img class="exercise-gif" loading="lazy" width="180" height="180">
+    <div class="exercise-info">
+      <h4 class="ex-name"></h4>
+      <div class="ex-tags">
+        <span class="tag tag-bodypart"></span>
+        <span class="tag tag-target"></span>
+        <span class="tag tag-equipment"></span>
+      </div>
+      <p class="ex-secondary"></p>
+      <ol class="ex-instructions"></ol>
+    </div>
+  </div>
+</template>
+
+<template id="meal-card-template">
+  <div class="meal-card glass">
+    <h4 class="meal-title"></h4>
+    <div class="meal-macros">
+      <span class="macro cal"></span>
+      <span class="macro protein"></span>
+      <span class="macro carbs"></span>
+      <span class="macro fat"></span>
+    </div>
+    <p class="meal-ingredients"></p>
+  </div>
+</template>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/chat.js') }}"></script>
+{% endblock %}

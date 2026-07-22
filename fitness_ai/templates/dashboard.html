@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block title %}Dashboard — PulseFit AI{% endblock %}
+{% block content %}
+<section class="dash-head">
+  <div>
+    <span class="eyebrow">DASHBOARD</span>
+    <h2>Hey {{ user.name.split(' ')[0] }}, let's move 🔥</h2>
+  </div>
+  <a href="{{ url_for('main.chat_page') }}" class="btn btn-primary">Ask AI Coach →</a>
+</section>
+
+<div class="quote-banner glass">✦ {{ quote }}</div>
+
+<section class="stat-grid">
+  <div class="stat-card glass">
+    <span class="stat-label">BMI</span>
+    <span class="stat-value">{{ bmi or '—' }}</span>
+    <span class="stat-tag tag-{{ bmi_category }}">{{ bmi_category.replace('_',' ')|title }}</span>
+  </div>
+  <div class="stat-card glass">
+    <span class="stat-label">Daily calorie target</span>
+    <span class="stat-value">{{ calorie_target or '—' }}<small> kcal</small></span>
+    <span class="stat-tag">{{ profile.goal.replace('_',' ')|title }}</span>
+  </div>
+  <div class="stat-card glass">
+    <span class="stat-label">Daily protein target</span>
+    <span class="stat-value">{{ protein_target or '—' }}<small> g</small></span>
+    <span class="stat-tag">{{ profile.diet_preference.replace('_',' ')|title }}</span>
+  </div>
+  <div class="stat-card glass">
+    <span class="stat-label">Workouts (14 days)</span>
+    <span class="stat-value">{{ total_workouts }}</span>
+    <span class="stat-tag">Keep the streak alive</span>
+  </div>
+</section>
+
+{% if bmi_advice %}
+<div class="advice-banner glass">💡 {{ bmi_advice }}</div>
+{% endif %}
+
+<section class="two-col">
+  <div class="glass panel">
+    <h3>Quick prompts</h3>
+    <p class="subtext">Tap one to jump straight into the AI coach chat.</p>
+    <div class="quick-prompts">
+      <a class="prompt-chip" href="{{ url_for('main.chat_page') }}?q=I want a bigger chest">I want a bigger chest</a>
+      <a class="prompt-chip" href="{{ url_for('main.chat_page') }}?q=I want six pack abs">Six pack abs</a>
+      <a class="prompt-chip" href="{{ url_for('main.chat_page') }}?q=I want to lose weight">Lose weight</a>
+      <a class="prompt-chip" href="{{ url_for('main.chat_page') }}?q=give me a full weekly workout plan">Weekly plan</a>
+      <a class="prompt-chip" href="{{ url_for('main.chat_page') }}?q=suggest a high protein diet">High-protein diet</a>
+      <a class="prompt-chip" href="{{ url_for('main.chat_page') }}?q=I only have dumbbells">Only have dumbbells</a>
+    </div>
+  </div>
+
+  <div class="glass panel">
+    <h3>Recent progress</h3>
+    {% if logs %}
+    <ul class="progress-list">
+      {% for l in logs %}
+      <li>
+        <span class="progress-date">{{ l.log_date.strftime('%d %b') }}</span>
+        <span>{{ l.workouts_completed }} workout(s)</span>
+        {% if l.weight_kg %}<span>{{ l.weight_kg }} kg</span>{% endif %}
+      </li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <p class="subtext">No entries yet — log your first workout on the Progress page.</p>
+    {% endif %}
+    <a href="{{ url_for('main.progress') }}" class="btn btn-ghost btn-block">Go to Progress →</a>
+  </div>
+</section>
+{% endblock %}
